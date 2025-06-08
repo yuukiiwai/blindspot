@@ -1,0 +1,17 @@
+{
+  "first-resources": ["a"],
+  "rules": [
+    {
+      "name": "make_a",
+      "effect": "resources = append(resources, \"a\")",
+      "fireCondition": "len(resources) == 0",
+      "blockCondition": "contains(resources, \"a\")"
+    },
+    {
+      "name": "delete_a",
+      "effect": "resources = filter(resources, func(x string) bool { return x != \"a\" })",
+      "fireCondition": "contains(resources, \"a\")",
+      "blockCondition": "len(resources) == 0"
+    }
+  ]
+}
