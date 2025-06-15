@@ -53,7 +53,7 @@ func createBlockConditionFunc(conditions []string) func(*core.Node) bool {
 	}
 }
 
-func NewRuledJsonParser() (Parser, error) {
+func NewRuledJsonParser() (core.Parser, error) {
 	return &RuledJson{}, nil
 }
 

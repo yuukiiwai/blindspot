@@ -6,7 +6,9 @@ EdgeRule エッジのルールを定義
 	Name: ルールの名前
 	Effect: エッジ発火後のNodeを返す関数
 	FireCondition: ルールが発火する条件に合致した場合にtrueを返す関数
-	BlockCondition: ルールがブロックされる条件に合致した場合にtrueを返す関数
+	BlockCondition: ルールがブロックされる条件に合致した場合にtrueを返す関数(前提として、FireConditionがtrueの場合に評価する)
+
+つまり発火条件は、FireConditionがtrueの上で、BlockConditionがfalseの場合に発火する。
 */
 type EdgeRule struct {
 	Name           string

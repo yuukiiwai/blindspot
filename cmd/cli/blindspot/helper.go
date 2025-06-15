@@ -5,10 +5,11 @@ import (
 	"path"
 	"strings"
 
-	"github.com/yuukiiwai/blindspot/pkg/input"
+	"github.com/yuukiiwai/blindspot/pkg/core"
+	"github.com/yuukiiwai/blindspot/pkg/std-impl/input"
 )
 
-var parserMap = map[string](func() (input.Parser, error)){
+var parserMap = map[string](func() (core.Parser, error)){
 	".json": input.NewRuledJsonParser,
 }
 
@@ -20,7 +21,7 @@ func getSupportedExtensions() []string {
 	return extensions
 }
 
-func getParser(inputFile string) (input.Parser, error) {
+func getParser(inputFile string) (core.Parser, error) {
 	parser, ok := parserMap[path.Ext(inputFile)]
 	if !ok {
 		return nil, fmt.Errorf("unsupported file extension: %s\nWe can only parse %v files", path.Ext(inputFile), strings.Join(getSupportedExtensions(), ", "))

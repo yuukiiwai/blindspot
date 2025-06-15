@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/yuukiiwai/blindspot/pkg/core"
-	"github.com/yuukiiwai/blindspot/pkg/output"
+	"github.com/yuukiiwai/blindspot/pkg/std-impl/output"
 )
 
 func main() {
@@ -83,7 +83,7 @@ func main() {
 	}
 
 	// フォーマッターの選択
-	var formatter output.Formatter
+	var formatter core.Formatter
 	switch *outputFormat {
 	case "mermaid":
 		formatter = output.NewMermaidFormatter()
