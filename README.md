@@ -15,7 +15,7 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 1. 状態遷移jsonを作成する
 2. コマンドを実行する
     ```sh
-    $ blindspot data.json
+    $ blindspot -input data.json -output mermaid
     ```
 
 ## コントリビューター向け
@@ -23,4 +23,18 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 ![初期案](./1st-design.jpg)
 
 # English
+## Installation
+```sh
+$ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
+```
 
+## Usage
+1. make state json
+2. execute under command
+    ```sh
+    $ blindspot -input data.json -output mermaid
+    ```
+
+## For Contributers
+## What I want to resolve
+![1st disign](./1st-design.jpg)
