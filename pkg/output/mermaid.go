@@ -43,16 +43,50 @@ func (f *MermaidFormatter) Format(generator *core.Generator) (string, error) {
 // getMermaidNodeID ノードのMermaid IDを生成
 func getMermaidNodeID(node *core.Node) string {
 	id := node.GetID()
+
+	// 明示的にemptyの場合
 	if id == "empty" {
 		return "empty"
 	}
-	return strings.ReplaceAll(strings.ReplaceAll(id, ",", "_"), " ", "_")
+
+	// 空文字列の場合（これは起こるべきではないが、安全のため）
+	if id == "" {
+		return "empty"
+	}
+
+	// 通常のIDをMermaidで使える形式に変換
+	// カンマをアンダースコアに、スペースをアンダースコアに置換
+	result := strings.ReplaceAll(id, ",", "_")
+	result = strings.ReplaceAll(result, " ", "_")
+
+	// その他の特殊文字も安全な文字に置換
+	result = strings.ReplaceAll(result, "-", "_")
+	result = strings.ReplaceAll(result, ".", "_")
+
+	return result
 }
 
 // getMermaidNodeLabel ノードのMermaid表示名を生成
 func getMermaidNodeLabel(node *core.Node) string {
-	if len(node.GetResources()) == 0 {
+	resources := node.GetResources()
+
+	// 空のリソースの場合
+	if len(resources) == 0 {
 		return "empty"
 	}
-	return strings.Join(node.GetResources(), "\\n")
+
+	// 空文字列を除去
+	nonEmptyResources := make([]string, 0, len(resources))
+	for _, resource := range resources {
+		if resource != "" {
+			nonEmptyResources = append(nonEmptyResources, resource)
+		}
+	}
+
+	// すべて空文字列だった場合
+	if len(nonEmptyResources) == 0 {
+		return "empty"
+	}
+
+	return strings.Join(nonEmptyResources, "<br/>")
 }

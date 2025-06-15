@@ -9,7 +9,7 @@ import (
 )
 
 var parserMap = map[string](func() (input.Parser, error)){
-	".tengo": input.NewTengoParser,
+	".json": input.NewRuledJsonParser,
 }
 
 func getSupportedExtensions() []string {

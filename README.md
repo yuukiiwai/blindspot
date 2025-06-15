@@ -8,7 +8,7 @@ Automatic generation of state transition diagrams according to the rules helps t
 # 日本語パート
 ## インストール方法
 ```sh
-$ go install github.com/yuukiiwai/blindspot
+$ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 ```
 
 ## 使用方法
@@ -17,7 +17,6 @@ $ go install github.com/yuukiiwai/blindspot
     ```sh
     $ blindspot data.json
     ```
-3. 
 
 ## コントリビューター向け
 ### 解決する課題

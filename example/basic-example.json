@@ -1,17 +1,33 @@
 {
-  "first-resources": ["a"],
-  "rules": [
+  "start_resources": [],
+  "edge_rules": [
     {
-      "name": "make_a",
-      "effect": "resources = append(resources, \"a\")",
-      "fireCondition": "len(resources) == 0",
-      "blockCondition": "contains(resources, \"a\")"
+      "name": "create_a",
+      "action": "create",
+      "rule": ["a"],
+      "fire_condition": [],
+      "block_condition": []
+    },
+    {
+      "name": "create_b_from_a",
+      "action": "create",
+      "rule": ["b"],
+      "fire_condition": ["a"],
+      "block_condition": ["b"]
+    },
+    {
+      "name": "delete_b",
+      "action": "delete",
+      "rule": ["b"],
+      "fire_condition": ["b"],
+      "block_condition": []
     },
     {
       "name": "delete_a",
-      "effect": "resources = filter(resources, func(x string) bool { return x != \"a\" })",
-      "fireCondition": "contains(resources, \"a\")",
-      "blockCondition": "len(resources) == 0"
+      "action": "delete",
+      "rule": ["a"],
+      "fire_condition": ["a"],
+      "block_condition": ["b"]
     }
   ]
 }
