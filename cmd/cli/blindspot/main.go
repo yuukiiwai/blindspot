@@ -12,10 +12,17 @@ import (
 
 func main() {
 	// コマンドライン引数の定義
+	var help bool
+	flag.BoolVar(&help, "help", false, "ヘルプを表示")
 	inputFile := flag.String("input", "", "入力ファイルのパス")
-	outputFormat := flag.String("format", "mermaid", "出力形式 (mermaid, visjs, dot)")
+	outputFormat := flag.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
 	logSeverity := flag.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
 	flag.Parse()
+
+	if help {
+		fmt.Println(getCommandDefinition())
+		os.Exit(0)
+	}
 
 	// ログの重大度の設定
 	var level slog.Level

@@ -27,3 +27,19 @@ func getParser(inputFile string) (input.Parser, error) {
 	}
 	return parser()
 }
+
+func getCommandDefinition() string {
+	return `
+	Usage:
+		blindspot -input <input_file> [OPTIONS]
+		blindspot -help
+
+	Options:
+		-output string (mermaid, visjs, dot) default: mermaid
+		-log-severity string (debug, info, warn, error) default: warn
+
+	Examples:
+		blindspot -input rules.json -output visjs
+		blindspot -input rules.json -output dot -log-severity debug
+	`
+}
