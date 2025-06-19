@@ -67,14 +67,14 @@ func main() {
 	}
 
 	// ルールのパース
-	firstResources, edgeRules, err := parser.Parse(string(ruleFile))
+	firstResources, newNode, edgeRules, err := parser.Parse(string(ruleFile))
 	if err != nil {
 		slog.Error("ルールのパースに失敗", "error", err)
 		os.Exit(1)
 	}
 
 	// ジェネレーターの作成
-	generator := core.NewGenerator(firstResources, edgeRules)
+	generator := core.NewGenerator(newNode, firstResources, edgeRules)
 
 	// ステートマシンの生成
 	if err := generator.Generate(); err != nil {

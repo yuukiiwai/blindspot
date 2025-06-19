@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/yuukiiwai/blindspot/pkg/core"
+	"github.com/yuukiiwai/blindspot/pkg/std-impl/node"
 )
 
 type RuledJson struct {
@@ -19,14 +20,18 @@ type RuledJson struct {
 	} `json:"edge_rules"`
 }
 
+func newStringListNode(resources []string) node.StringListNode {
+	return node.NewStringListNode(resources)
+}
+
 func createFireConditionFunc(conditions []string) func(*core.Node) bool {
 	return func(n *core.Node) bool {
+		resources := (*n).GetResources().([]string)
 		// 条件が空の場合は、ノードのリソースも空の場合のみtrueを返す
 		if len(conditions) == 0 {
-			return len(n.GetResources()) == 0
+			return len(resources) == 0
 		}
 
-		resources := n.GetResources()
 		for _, condition := range conditions {
 			if slices.Contains(resources, condition) {
 				return true
@@ -38,12 +43,12 @@ func createFireConditionFunc(conditions []string) func(*core.Node) bool {
 
 func createBlockConditionFunc(conditions []string) func(*core.Node) bool {
 	return func(n *core.Node) bool {
+		resources := (*n).GetResources().([]string)
 		// 条件が空の場合は常にfalseを返す（ブロックしない）
 		if len(conditions) == 0 {
 			return false
 		}
 
-		resources := n.GetResources()
 		for _, condition := range conditions {
 			if slices.Contains(resources, condition) {
 				return true
@@ -57,13 +62,21 @@ func NewRuledJsonParser() (core.Parser, error) {
 	return &RuledJson{}, nil
 }
 
-func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
+func (r *RuledJson) Parse(input string) (
+	firstResource core.Node,
+	newNode func(any) core.Node,
+	edgeRules []*core.EdgeRule,
+	err error,
+) {
 	var ruledJson RuledJson
-	err := json.Unmarshal([]byte(input), &ruledJson)
+	err = json.Unmarshal([]byte(input), &ruledJson)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	var edgeRules []*core.EdgeRule
+	newNode = func(resources any) core.Node {
+		return newStringListNode(resources.([]string))
+	}
+
 	for _, rule := range ruledJson.EdgeRules {
 		// クロージャー内で使用するためにルールをコピー
 		currentRule := rule
@@ -74,11 +87,11 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 			edgeRules = append(edgeRules, core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := n.GetResources()
+					currentResources := (*n).GetResources().([]string)
 					newResources := make([]string, len(currentResources)+1)
 					copy(newResources, currentResources)
 					newResources[len(currentResources)] = currentRule.Rule[0]
-					newNode := core.NewNode(newResources)
+					newNode := newNode(newResources)
 					return &newNode
 				},
 				fireCondition,
@@ -88,7 +101,7 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 			edgeRules = append(edgeRules, core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := n.GetResources()
+					currentResources := (*n).GetResources().([]string)
 					newResources := make([]string, len(currentResources))
 					copy(newResources, currentResources)
 
@@ -97,7 +110,7 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 						panic(fmt.Sprintf("rule: %v, rule.Rule[0] %s not found in %v", currentRule, currentRule.Rule[0], currentResources))
 					}
 					newResources[targetIndex] = currentRule.Rule[1]
-					newNode := core.NewNode(newResources)
+					newNode := newNode(newResources)
 					return &newNode
 				},
 				fireCondition,
@@ -107,7 +120,7 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 			edgeRules = append(edgeRules, core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := n.GetResources()
+					currentResources := (*n).GetResources().([]string)
 					newResources := make([]string, 0, len(currentResources))
 
 					// 削除対象以外の要素をコピー
@@ -117,7 +130,7 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 						}
 					}
 
-					newNode := core.NewNode(newResources)
+					newNode := newNode(newResources)
 					return &newNode
 				},
 				fireCondition,
@@ -127,5 +140,5 @@ func (r *RuledJson) Parse(input string) ([]string, []*core.EdgeRule, error) {
 			panic(fmt.Sprintf("the rule action is not defined: %v, action: %s", currentRule, currentRule.Action))
 		}
 	}
-	return ruledJson.StartResources, edgeRules, nil
+	return newNode(ruledJson.StartResources), newNode, edgeRules, nil
 }

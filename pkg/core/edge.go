@@ -22,7 +22,7 @@ func NewEdge(from, to *Node, rule *EdgeRule) *Edge {
 
 // String エッジの文字列表現
 func (e *Edge) String() string {
-	return fmt.Sprintf("%s --%s--> %s", e.from.GetID(), e.rule.Name, e.to.GetID())
+	return fmt.Sprintf("%s --%s--> %s", (*e.from).GetID(), e.rule.Name, (*e.to).GetID())
 }
 
 // GetFrom 開始ノードを取得

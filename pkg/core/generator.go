@@ -6,19 +6,25 @@ import (
 
 // Generator ステートマシン生成器
 type Generator struct {
-	startResources []string
+	newNode        func(resources any) Node
+	startResources Node
 	edgeRules      []*EdgeRule
-	nodes          map[string]*Node
+	nodes          map[string]Node // インターフェースを使用
 	edges          []*Edge
 	processedNodes map[string]bool
 }
 
 // NewGenerator 新しいジェネレーターを作成
-func NewGenerator(startResources []string, edgeRules []*EdgeRule) *Generator {
+func NewGenerator(
+	newNode func(resources any) Node,
+	startResources Node,
+	edgeRules []*EdgeRule,
+) *Generator {
 	return &Generator{
+		newNode:        newNode,
 		startResources: startResources,
 		edgeRules:      edgeRules,
-		nodes:          make(map[string]*Node),
+		nodes:          make(map[string]Node),
 		edges:          make([]*Edge, 0),
 		processedNodes: make(map[string]bool),
 	}
@@ -26,11 +32,11 @@ func NewGenerator(startResources []string, edgeRules []*EdgeRule) *Generator {
 
 // Generate ステートマシンを生成
 func (g *Generator) Generate() error {
-	startNode := NewNode(g.startResources)
+	startNode := g.newNode(g.startResources.GetResources())
 	startNodePtr := g.addOrGetNode(&startNode)
 	queue := []*Node{startNodePtr}
 
-	slog.Debug("[START] 開始ノード", "resources", startNodePtr.GetResources(), "id", startNodePtr.GetID())
+	slog.Debug("[START] 開始ノード", "resources", (*startNodePtr).GetResources(), "id", (*startNodePtr).GetID())
 
 	iterationCount := 0
 	for len(queue) > 0 {
@@ -42,9 +48,9 @@ func (g *Generator) Generate() error {
 
 		currentNode := queue[0]
 		queue = queue[1:]
-		nodeID := currentNode.GetID()
+		nodeID := (*currentNode).GetID()
 
-		slog.Debug("[ITERATION]", "count", iterationCount, "resources", currentNode.GetResources(), "id", nodeID, "queueSize", len(queue))
+		slog.Debug("[ITERATION]", "count", iterationCount, "resources", (*currentNode).GetResources(), "id", nodeID, "queueSize", len(queue))
 
 		if g.processedNodes[nodeID] {
 			slog.Debug("[SKIP] すでに処理済み", "id", nodeID)
@@ -58,13 +64,13 @@ func (g *Generator) Generate() error {
 
 		for _, edge := range newEdges {
 			g.edges = append(g.edges, edge)
-			targetNodeID := edge.GetTo().GetID()
+			targetNodeID := (*edge.GetTo()).GetID()
 			slog.Debug("[EDGE_ADD]", "edge", edge.String())
 			if !g.processedNodes[targetNodeID] {
 				queue = append(queue, edge.GetTo())
-				slog.Debug("[QUEUE_ADD] キューに追加", "resources", edge.GetTo().GetResources(), "id", edge.GetTo().GetID())
+				slog.Debug("[QUEUE_ADD] キューに追加", "resources", (*edge.GetTo()).GetResources(), "id", (*edge.GetTo()).GetID())
 			} else {
-				slog.Debug("[QUEUE_SKIP] すでに処理済みのためキューに追加しない", "resources", edge.GetTo().GetResources(), "id", edge.GetTo().GetID())
+				slog.Debug("[QUEUE_SKIP] すでに処理済みのためキューに追加しない", "resources", (*edge.GetTo()).GetResources(), "id", (*edge.GetTo()).GetID())
 			}
 		}
 
@@ -84,7 +90,11 @@ func (g *Generator) Generate() error {
 
 // GetNodes 生成されたノードを取得
 func (g *Generator) GetNodes() map[string]*Node {
-	return g.nodes
+	nodes := make(map[string]*Node)
+	for id, node := range g.nodes {
+		nodes[id] = &node
+	}
+	return nodes
 }
 
 // GetEdges 生成されたエッジを取得
@@ -94,14 +104,14 @@ func (g *Generator) GetEdges() []*Edge {
 
 // addOrGetNode ノードを追加または取得
 func (g *Generator) addOrGetNode(node *Node) *Node {
-	id := node.GetID()
-	slog.Debug("[NODE_DEBUG]", "resources", node.GetResources(), "id", id)
+	id := (*node).GetID()
+	slog.Debug("[NODE_DEBUG]", "resources", (*node).GetResources(), "id", id)
 	if existingNode, exists := g.nodes[id]; exists {
 		slog.Debug("[NODE_REUSE] 既存ノードを再利用", "id", id)
-		return existingNode
+		return &existingNode
 	}
-	g.nodes[id] = node
-	slog.Debug("[NODE_CREATE] 新しいノードを作成", "id", id, "resources", node.GetResources())
+	g.nodes[id] = *node
+	slog.Debug("[NODE_CREATE] 新しいノードを作成", "id", id, "resources", (*node).GetResources())
 	return node
 }
 
@@ -112,10 +122,10 @@ func (g *Generator) generateEdgesFromNode(node *Node) []*Edge {
 	for _, rule := range g.edgeRules {
 		fire := rule.GetFireCondition()(node)
 		block := rule.GetBlockCondition()(node)
-		slog.Debug("[CHECK]", "resources", node.GetResources(), "rule", rule.GetName(), "fire", fire, "block", block)
+		slog.Debug("[CHECK]", "resources", (*node).GetResources(), "rule", rule.GetName(), "fire", fire, "block", block)
 		if fire && !block {
 			newNode := rule.GetEffect()(node)
-			slog.Debug("[EFFECT]", "resources", node.GetResources(), "rule", rule.GetName(), "newResources", newNode.GetResources(), "newId", newNode.GetID())
+			slog.Debug("[EFFECT]", "resources", (*node).GetResources(), "rule", rule.GetName(), "newResources", (*newNode).GetResources(), "newId", (*newNode).GetID())
 			actualNewNode := g.addOrGetNode(newNode)
 			edge := NewEdge(node, actualNewNode, rule)
 			edges = append(edges, edge)

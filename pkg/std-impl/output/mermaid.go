@@ -42,7 +42,7 @@ func (f *MermaidFormatter) Format(generator *core.Generator) (string, error) {
 
 // getMermaidNodeID ノードのMermaid IDを生成
 func getMermaidNodeID(node *core.Node) string {
-	id := node.GetID()
+	id := (*node).GetID()
 
 	// 明示的にemptyの場合
 	if id == "empty" {
@@ -68,25 +68,7 @@ func getMermaidNodeID(node *core.Node) string {
 
 // getMermaidNodeLabel ノードのMermaid表示名を生成
 func getMermaidNodeLabel(node *core.Node) string {
-	resources := node.GetResources()
+	resources := (*node).GetResourcesString()
 
-	// 空のリソースの場合
-	if len(resources) == 0 {
-		return "empty"
-	}
-
-	// 空文字列を除去
-	nonEmptyResources := make([]string, 0, len(resources))
-	for _, resource := range resources {
-		if resource != "" {
-			nonEmptyResources = append(nonEmptyResources, resource)
-		}
-	}
-
-	// すべて空文字列だった場合
-	if len(nonEmptyResources) == 0 {
-		return "empty"
-	}
-
-	return strings.Join(nonEmptyResources, "<br/>")
+	return resources
 }
