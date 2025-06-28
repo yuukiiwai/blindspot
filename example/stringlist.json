@@ -1,0 +1,33 @@
+{
+  "start_resources": [],
+  "edge_rules": [
+    {
+      "name": "create_a",
+      "action": "create",
+      "rule": ["a"],
+      "fire_condition": [],
+      "block_condition": []
+    },
+    {
+      "name": "create_b_from_a",
+      "action": "create",
+      "rule": ["b"],
+      "fire_condition": ["a"],
+      "block_condition": ["b"]
+    },
+    {
+      "name": "delete_b",
+      "action": "delete",
+      "rule": ["b"],
+      "fire_condition": ["b"],
+      "block_condition": []
+    },
+    {
+      "name": "delete_a",
+      "action": "delete",
+      "rule": ["a"],
+      "fire_condition": ["a"],
+      "block_condition": ["b"]
+    }
+  ]
+}
