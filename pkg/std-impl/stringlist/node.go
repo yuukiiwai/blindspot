@@ -1,4 +1,4 @@
-package node
+package stringlist
 
 import (
 	"sort"
@@ -31,14 +31,14 @@ func (n StringListNode) GetResources() any {
 }
 
 // GetResourcesString リソースのリストを文字列で取得
-func (n StringListNode) GetResourcesString() string {
+func (n StringListNode) GetResourcesString() []string {
 	if len(n) == 0 {
-		return "empty"
+		return []string{"empty"}
 	}
-	return strings.Join(n, "<br/>")
+	return n
 }
 
-func NewStringListNode(resources []string) StringListNode {
+func newStringListNode(resources []string) StringListNode {
 	// 空文字列を除去してソート
 	filtered := make([]string, 0, len(resources))
 	for _, resource := range resources {

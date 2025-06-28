@@ -1,4 +1,4 @@
-package input
+package stringlist
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"slices"
 
 	"github.com/yuukiiwai/blindspot/pkg/core"
-	"github.com/yuukiiwai/blindspot/pkg/std-impl/node"
 )
 
 type RuledJson struct {
@@ -20,13 +19,12 @@ type RuledJson struct {
 	} `json:"edge_rules"`
 }
 
-func newStringListNode(resources []string) node.StringListNode {
-	return node.NewStringListNode(resources)
-}
-
 func createFireConditionFunc(conditions []string) func(*core.Node) bool {
 	return func(n *core.Node) bool {
-		resources := (*n).GetResources().([]string)
+		resources, ok := (*n).GetResources().([]string)
+		if !ok {
+			panic(fmt.Sprintf("node resources is not []string: %v", n))
+		}
 		// 条件が空の場合は、ノードのリソースも空の場合のみtrueを返す
 		if len(conditions) == 0 {
 			return len(resources) == 0
@@ -43,7 +41,10 @@ func createFireConditionFunc(conditions []string) func(*core.Node) bool {
 
 func createBlockConditionFunc(conditions []string) func(*core.Node) bool {
 	return func(n *core.Node) bool {
-		resources := (*n).GetResources().([]string)
+		resources, ok := (*n).GetResources().([]string)
+		if !ok {
+			panic(fmt.Sprintf("node resources is not []string: %v", n))
+		}
 		// 条件が空の場合は常にfalseを返す（ブロックしない）
 		if len(conditions) == 0 {
 			return false
@@ -83,11 +84,15 @@ func (r *RuledJson) Parse(input string) (
 		fireCondition := createFireConditionFunc(currentRule.FireCondition)
 		blockCondition := createBlockConditionFunc(currentRule.BlockCondition)
 
-		if currentRule.Action == "create" {
-			edgeRules = append(edgeRules, core.NewEdgeRule(
+		switch currentRule.Action {
+		case "create":
+			edgeRule, err := core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := (*n).GetResources().([]string)
+					currentResources, ok := (*n).GetResources().([]string)
+					if !ok {
+						panic(fmt.Sprintf("node resources is not []string: %v", n))
+					}
 					newResources := make([]string, len(currentResources)+1)
 					copy(newResources, currentResources)
 					newResources[len(currentResources)] = currentRule.Rule[0]
@@ -96,12 +101,19 @@ func (r *RuledJson) Parse(input string) (
 				},
 				fireCondition,
 				blockCondition,
-			))
-		} else if currentRule.Action == "update" {
-			edgeRules = append(edgeRules, core.NewEdgeRule(
+			)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			edgeRules = append(edgeRules, edgeRule)
+		case "update":
+			edgeRule, err := core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := (*n).GetResources().([]string)
+					currentResources, ok := (*n).GetResources().([]string)
+					if !ok {
+						panic(fmt.Sprintf("node resources is not []string: %v", n))
+					}
 					newResources := make([]string, len(currentResources))
 					copy(newResources, currentResources)
 
@@ -115,12 +127,19 @@ func (r *RuledJson) Parse(input string) (
 				},
 				fireCondition,
 				blockCondition,
-			))
-		} else if currentRule.Action == "delete" {
-			edgeRules = append(edgeRules, core.NewEdgeRule(
+			)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			edgeRules = append(edgeRules, edgeRule)
+		case "delete":
+			edgeRule, err := core.NewEdgeRule(
 				currentRule.Name,
 				func(n *core.Node) *core.Node {
-					currentResources := (*n).GetResources().([]string)
+					currentResources, ok := (*n).GetResources().([]string)
+					if !ok {
+						panic(fmt.Sprintf("node resources is not []string: %v", n))
+					}
 					newResources := make([]string, 0, len(currentResources))
 
 					// 削除対象以外の要素をコピー
@@ -135,9 +154,13 @@ func (r *RuledJson) Parse(input string) (
 				},
 				fireCondition,
 				blockCondition,
-			))
-		} else {
-			panic(fmt.Sprintf("the rule action is not defined: %v, action: %s", currentRule, currentRule.Action))
+			)
+			if err != nil {
+				return nil, nil, nil, err
+			}
+			edgeRules = append(edgeRules, edgeRule)
+		default:
+			return nil, nil, nil, fmt.Errorf("the rule action is not defined: %v, action: %s", currentRule, currentRule.Action)
 		}
 	}
 	return newNode(ruledJson.StartResources), newNode, edgeRules, nil

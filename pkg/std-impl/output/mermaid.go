@@ -70,5 +70,5 @@ func getMermaidNodeID(node *core.Node) string {
 func getMermaidNodeLabel(node *core.Node) string {
 	resources := (*node).GetResourcesString()
 
-	return resources
+	return strings.Join(resources, "<br/>")
 }

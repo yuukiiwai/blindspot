@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/yuukiiwai/blindspot/pkg/core"
-	"github.com/yuukiiwai/blindspot/pkg/std-impl/input"
+	"github.com/yuukiiwai/blindspot/pkg/std-impl/stringlist"
 )
 
 var parserMap = map[string](func() (core.Parser, error)){
-	".json": input.NewRuledJsonParser,
+	".json": stringlist.NewRuledJsonParser,
 }
 
 func getSupportedExtensions() []string {
