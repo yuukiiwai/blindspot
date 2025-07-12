@@ -18,6 +18,23 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
     $ blindspot -input data.json -output mermaid
     ```
 
+## 便利な使い方
+data.jsonのルールを元に書かれた状態遷移図をoutput.svgに記載
+
+### mermaidを末尾に置く
+target.mdの末尾にグラフを設置する
+```sh
+$ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> target.md
+```
+
+### graphvizを使用してsvgを生成する
+> [!Info]
+> 前提: graphvizがインストールされていること
+
+```sh
+$ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
+```
+
 ## コントリビューター向け
 ### 解決する課題
 ![初期案](./1st-design.jpg)
@@ -34,6 +51,23 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
     ```sh
     $ blindspot -input data.json -output mermaid
     ```
+
+## Convenient Usage
+Generate state transition diagrams based on data.json rules and save to output.svg
+
+### Append mermaid to file
+Place graph at the end of target.md
+```sh
+$ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> target.md
+```
+
+### Generate SVG using graphviz
+> [!Info]
+> Prerequisite: graphviz must be installed
+
+```sh
+$ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
+```
 
 ## For Contributers
 ## What I want to resolve
