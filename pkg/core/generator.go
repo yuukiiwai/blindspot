@@ -2,6 +2,7 @@ package core
 
 import (
 	"log/slog"
+	"sort"
 )
 
 // Generator ステートマシン生成器
@@ -89,10 +90,20 @@ func (g *Generator) Generate() error {
 }
 
 // GetNodes 生成されたノードを取得
-func (g *Generator) GetNodes() map[string]*Node {
-	nodes := make(map[string]*Node)
-	for id, node := range g.nodes {
-		nodes[id] = &node
+// 設計資料として出力される際の一貫性と可読性のため、ノードIDでソートして返す
+func (g *Generator) GetNodes() []*Node {
+	// ノードIDのスライスを作成してソート
+	var ids []string
+	for id := range g.nodes {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	
+	// ソート済みのIDに基づいてノードスライスを構築
+	var nodes []*Node
+	for _, id := range ids {
+		node := g.nodes[id]
+		nodes = append(nodes, &node)
 	}
 	return nodes
 }
