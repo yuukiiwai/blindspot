@@ -13,6 +13,7 @@ type Generator struct {
 	nodes          map[string]Node // インターフェースを使用
 	edges          []*Edge
 	processedNodes map[string]bool
+	limit          *int64
 }
 
 // NewGenerator 新しいジェネレーターを作成
@@ -20,6 +21,7 @@ func NewGenerator(
 	newNode func(resources any) Node,
 	startResources Node,
 	edgeRules []*EdgeRule,
+	limit *int64,
 ) *Generator {
 	return &Generator{
 		newNode:        newNode,
@@ -28,6 +30,7 @@ func NewGenerator(
 		nodes:          make(map[string]Node),
 		edges:          make([]*Edge, 0),
 		processedNodes: make(map[string]bool),
+		limit:          limit,
 	}
 }
 
@@ -39,11 +42,11 @@ func (g *Generator) Generate() error {
 
 	slog.Debug("[START] 開始ノード", "resources", (*startNodePtr).GetResources(), "id", (*startNodePtr).GetID())
 
-	iterationCount := 0
+	var iterationCount int64 = 0
 	for len(queue) > 0 {
 		iterationCount++
-		if iterationCount > 1000 { // 安全のための上限設定
-			slog.Error("[ERROR] 1000回以上の反復でループ検出。強制終了します。")
+		if g.limit != nil && iterationCount > *g.limit {
+			slog.Error("[ERROR] 反復回数が上限を超えました。強制終了します。")
 			break
 		}
 
@@ -98,7 +101,7 @@ func (g *Generator) GetNodes() []*Node {
 		ids = append(ids, id)
 	}
 	sort.Strings(ids)
-	
+
 	// ソート済みのIDに基づいてノードスライスを構築
 	var nodes []*Node
 	for _, id := range ids {

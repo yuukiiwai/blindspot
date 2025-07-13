@@ -35,12 +35,18 @@ func getCommandDefinition() string {
 		blindspot -input <input_file> [OPTIONS]
 		blindspot -help
 
+	Required:
+		-input string (入力ファイルのパス)
+
 	Options:
 		-output string (mermaid, visjs, dot) default: mermaid
 		-log-severity string (debug, info, warn, error) default: warn
+		--limit int64 (反復回数の上限、無限ループ防止) default: 0 (無制限)
 
 	Examples:
+		blindspot -input rules.json -output mermaid
 		blindspot -input rules.json -output visjs
 		blindspot -input rules.json -output dot -log-severity debug
+		blindspot -input rules.json -output mermaid --limit 1000
 	`
 }

@@ -43,7 +43,7 @@ alwaysApply: true
 ## Input/Output Formats
 - **Input**: JSON with `start_resources`, `edge_rules` structure
 - **Output formats**: `mermaid`, `visjs`, `dot`
-- **CLI flags**: `-input`, `-output`, `-log-severity`
+- **CLI flags**: `-input`, `-output`, `-log-severity`, `--limit`
 
 ## Development Guidelines
 - Maintain node ID uniqueness
@@ -51,6 +51,7 @@ alwaysApply: true
 - Ensure proper resource management (especially go-graphviz context and graph)
 - Follow Japanese comment consistency
 - Reference existing implementations (e.g., mermaid.go) for patterns
+- Implement iteration limit safety mechanism to prevent infinite loops
 
 ## Extension Considerations
 - Add new output formats to `pkg/std-impl/output/`

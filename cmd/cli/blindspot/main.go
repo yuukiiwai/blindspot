@@ -17,7 +17,14 @@ func main() {
 	inputFile := flag.String("input", "", "入力ファイルのパス")
 	outputFormat := flag.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
 	logSeverity := flag.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
+	limitFlag := flag.Int64("limit", -1, "反復回数の上限")
 	flag.Parse()
+
+	// limitが指定されていない場合はnilポインタを使用
+	var limit *int64
+	if *limitFlag != -1 {
+		limit = limitFlag
+	}
 
 	if help {
 		fmt.Println(getCommandDefinition())
@@ -73,8 +80,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	if limit != nil {
+		fmt.Printf("反復回数の上限は%dです.よろしいですか？(y/n)", *limit)
+		var input string
+		fmt.Scanln(&input)
+		if input != "y" {
+			os.Exit(0)
+		}
+	} else {
+		fmt.Println("反復回数の上限は設定されていません.論理的に終了条件が存在しない場合,コンピューターに不具合が発生する可能性があります.また,生成後のステートマシンの出力中に停止する可能性があります.よろしいですか？(y/n)")
+		var input string
+		fmt.Scanln(&input)
+		if input != "y" {
+			os.Exit(0)
+		}
+	}
+
 	// ジェネレーターの作成
-	generator := core.NewGenerator(newNode, firstResources, edgeRules)
+	generator := core.NewGenerator(newNode, firstResources, edgeRules, limit)
 
 	// ステートマシンの生成
 	if err := generator.Generate(); err != nil {

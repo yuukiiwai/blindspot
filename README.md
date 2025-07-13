@@ -18,6 +18,14 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
     $ blindspot -input data.json -output mermaid
     ```
 
+### 制限モード
+⚠️ **重要**: `--limit`を指定しない場合、無限ループが発生する可能性があり、システムに重大な影響を与える危険があります。
+
+無限ループを防ぐため、反復回数の上限を設定することを強く推奨します：
+```sh
+$ blindspot -input data.json -output mermaid --limit 1000
+```
+
 ## 便利な使い方
 data.jsonのルールを元に書かれた状態遷移図をoutput.svgに記載
 
@@ -56,6 +64,14 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
     ```sh
     $ blindspot -input data.json -output mermaid
     ```
+
+### Limit Mode
+⚠️ **Important**: Without specifying `--limit`, infinite loops may occur and pose serious risks to your system.
+
+It is strongly recommended to set an upper limit on iterations to prevent infinite loops:
+```sh
+$ blindspot -input data.json -output mermaid --limit 1000
+```
 
 ## Convenient Usage
 Generate state transition diagrams based on data.json rules and save to output.svg
