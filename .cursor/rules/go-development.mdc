@@ -1,0 +1,45 @@
+---
+description: Core Go development standards and best practices
+globs: ["**/*.go", "**/go.mod", "**/go.sum"]
+alwaysApply: true
+---
+
+# Go Development Standards
+
+## Code Style and Conventions
+- Use Japanese comments and documentation consistently
+- Follow CamelCase naming (Go standard)
+- Start interfaces with uppercase letters (e.g., `Formatter`, `Parser`)
+- Start structs with uppercase letters (e.g., `DotFormatter`, `MermaidFormatter`)
+- Prefer standard library over external dependencies
+- Use `go fmt` for code formatting
+- Run `go vet` for static analysis
+
+## Error Handling
+- Use panic only for type mismatches (see EdgeRule comments as reference)
+- Return proper errors for normal error cases
+- Use defer statements for resource cleanup
+- Handle errors explicitly, never ignore them
+
+## Logging
+- Use `log/slog` for structured logging
+- Include detailed debug information
+- Use appropriate log levels: debug, info, warn, error
+- Ensure logs provide context for troubleshooting
+
+## Testing
+- Name test files with `*_test.go` format
+- Follow existing test patterns in the codebase
+- Include both success and error case testing
+- Test expected output validation
+
+## Dependencies
+- Prefer standard library when possible
+- Document external dependencies clearly
+- Use Go modules for dependency management
+- Run `go mod tidy` regularly
+
+## Performance
+- Consider resource management, especially for external libraries
+- Use appropriate data structures for the use case
+- Profile code when performance is critical

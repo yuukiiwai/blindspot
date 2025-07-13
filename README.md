@@ -36,6 +36,11 @@ $ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
 ```
 
 ## コントリビューター向け
+### AI開発者向け設定
+このプロジェクトにはCursor IDEとClaude Code用の設定が含まれています:
+- `.cursor/rules/`: Cursor IDE用プロジェクト固有ルール
+- `CLAUDE.md`: Claude Code用開発ガイダンス
+
 ### 解決する課題
 ![初期案](./1st-design.jpg)
 
@@ -70,5 +75,10 @@ $ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
 ```
 
 ## For Contributers
+### AI Developer Setup
+This project includes configurations for Cursor IDE and Claude Code:
+- `.cursor/rules/`: Project-specific rules for Cursor IDE
+- `CLAUDE.md`: Development guidance for Claude Code
+
 ## What I want to resolve
 ![1st disign](./1st-design.jpg)

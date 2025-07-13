@@ -1,0 +1,59 @@
+---
+description: Blindspot finite state machine generator project specific rules
+globs: ["pkg/**/*.go", "cmd/**/*.go"]
+alwaysApply: true
+---
+
+# Blindspot Project Guidelines
+
+## Project Overview
+- **Purpose**: Generate state transition diagrams from JSON rules to identify blind spots
+- **Language**: Go 1.24.3
+- **Architecture**: Clean architecture pattern (core + std-impl)
+
+## Core Components Structure
+- **pkg/core/**: Business logic and interface definitions
+  - `Generator`: Core state machine generation engine with BFS traversal
+  - `Node`: Interface for state representation with ID and resource management
+  - `Edge`: Represents state transitions with rules
+  - `EdgeRule`: Defines transition conditions and effects
+  - `Formatter`: Interface for output generation (mermaid, dot, visjs)
+  - `Parser`: Interface for input parsing
+
+- **pkg/std-impl/**: Concrete implementations
+  - `output/`: Output formatters (mermaid.go, dot.go, visjs.go)
+  - `stringlist/`: String list-based parser implementation
+
+## Implementation Patterns
+
+### Adding New Output Formatters
+1. Create new file in `pkg/std-impl/output/`
+2. Implement `core.Formatter` interface
+3. Add `Format(generator *core.Generator) (string, error)` method
+4. Create node ID generation function (`getXxxNodeID`)
+5. Create node label generation function (`getXxxNodeLabel`)
+6. Handle special character conversion (comma, space, hyphen, dot → underscore)
+7. Add to formatter selection in `cmd/cli/blindspot/main.go`
+
+### Adding New Parsers
+1. Create new package in `pkg/std-impl/`
+2. Implement `core.Parser` interface
+3. Add to parser selection logic in CLI
+
+## Input/Output Formats
+- **Input**: JSON with `start_resources`, `edge_rules` structure
+- **Output formats**: `mermaid`, `visjs`, `dot`
+- **CLI flags**: `-input`, `-output`, `-log-severity`
+
+## Development Guidelines
+- Maintain node ID uniqueness
+- Avoid edge duplication
+- Ensure proper resource management (especially go-graphviz context and graph)
+- Follow Japanese comment consistency
+- Reference existing implementations (e.g., mermaid.go) for patterns
+
+## Extension Considerations
+- Add new output formats to `pkg/std-impl/output/`
+- Add new parsers to `pkg/std-impl/`
+- Minimize interface changes
+- Maintain backward compatibility

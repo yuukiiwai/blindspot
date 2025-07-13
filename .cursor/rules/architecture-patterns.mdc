@@ -1,0 +1,55 @@
+---
+description: Architecture patterns and design principles
+globs: ["pkg/core/**/*.go", "pkg/std-impl/**/*.go"]
+alwaysApply: false
+---
+
+# Architecture Patterns & Design Principles
+
+## Clean Architecture Implementation
+- Separate core business logic from implementation details
+- Define interfaces in core package
+- Implement concrete types in std-impl packages
+- Maintain dependency inversion (high-level modules don't depend on low-level modules)
+
+## Interface Design
+- Keep interfaces small and focused (Interface Segregation Principle)
+- Define interfaces where they are used, not where they are implemented
+- Use composition over inheritance
+- Ensure interfaces are testable and mockable
+
+## Factory Pattern Usage
+- Use factory functions for creating formatters and parsers
+- Encapsulate object creation logic
+- Allow for easy extension with new implementations
+- Example: `NewDotFormatter()`, `NewMermaidFormatter()`
+
+## Error Handling Strategy
+- Use Go's explicit error handling
+- Create custom error types when needed
+- Wrap errors with context using fmt.Errorf
+- Don't ignore errors silently
+
+## Resource Management
+- Use defer for cleanup operations
+- Implement proper lifecycle management for resources
+- Handle concurrent access safely if applicable
+- Example: graphviz context and graph cleanup
+
+## Extensibility Patterns
+- Design for extension through interfaces
+- Use plugin-like architecture for formatters and parsers
+- Minimize coupling between components
+- Support configuration through dependency injection
+
+## Testing Architecture
+- Write tests for interfaces, not implementations
+- Use table-driven tests for multiple scenarios
+- Mock external dependencies
+- Test error conditions as well as happy paths
+
+## Performance Considerations
+- Use appropriate algorithms (BFS for state space exploration)
+- Implement loop detection mechanisms
+- Consider memory usage in large state spaces
+- Profile performance-critical paths
