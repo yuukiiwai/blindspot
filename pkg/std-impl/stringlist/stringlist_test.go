@@ -67,6 +67,7 @@ func TestStringListNode(t *testing.T) {
 		newNode,
 		firstResource,
 		edgeRules,
+		nil,
 	)
 	generator.Generate()
 	mermaid := output.NewMermaidFormatter()
