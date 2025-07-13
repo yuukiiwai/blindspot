@@ -17,8 +17,14 @@ func main() {
 	inputFile := flag.String("input", "", "入力ファイルのパス")
 	outputFormat := flag.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
 	logSeverity := flag.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
-	limit := flag.Int64("-limit", 0, "反復回数の上限")
+	limitFlag := flag.Int64("limit", -1, "反復回数の上限")
 	flag.Parse()
+
+	// limitが指定されていない場合はnilポインタを使用
+	var limit *int64
+	if *limitFlag != -1 {
+		limit = limitFlag
+	}
 
 	if help {
 		fmt.Println(getCommandDefinition())
@@ -74,7 +80,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *limit != 0 {
+	if limit != nil {
 		fmt.Printf("反復回数の上限は%dです.よろしいですか？(y/n)", *limit)
 		var input string
 		fmt.Scanln(&input)
