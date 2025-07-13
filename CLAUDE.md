@@ -15,6 +15,9 @@ go build -o blindspot cmd/cli/blindspot/main.go
 # Run with input file
 ./blindspot -input example/stringlist.json -output mermaid
 
+# Run with iteration limit (safe mode)
+./blindspot -input example/stringlist.json -output mermaid --limit 1000
+
 # Install globally
 go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 ```
@@ -63,6 +66,7 @@ go mod tidy
 - Clean separation between core logic and implementations
 - Factory pattern for formatter and parser creation
 - BFS algorithm for state space exploration with loop detection
+- Iteration limit safety mechanism to prevent infinite loops
 
 ### Input Format
 JSON structure with:
@@ -119,3 +123,13 @@ JSON structure with:
 - External: `github.com/goccy/go-graphviz` (DOT format output)
 - Standard library preferred for other functionality
 - Go 1.24.3 required
+
+## Safety Features
+### Iteration Limit Mode
+⚠️ **Critical**: Running without `--limit` is dangerous and may cause infinite loops that can freeze or crash the system.
+
+- Use `--limit` flag to prevent infinite loops in state generation
+- Generator accepts optional limit parameter in NewGenerator constructor
+- When limit is exceeded, generation stops with error log
+- Interactive confirmation prompts for safety awareness
+- **Always specify --limit in production environments**

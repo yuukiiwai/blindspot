@@ -53,3 +53,9 @@ alwaysApply: false
 - Implement loop detection mechanisms
 - Consider memory usage in large state spaces
 - Profile performance-critical paths
+
+## Safety Mechanisms
+- Implement iteration limits to prevent infinite loops
+- Provide user confirmation prompts for safety awareness
+- Use optional limit parameters in core generators
+- Log appropriate warnings when limits are exceeded
