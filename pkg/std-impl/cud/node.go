@@ -1,10 +1,10 @@
 package cud
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/yuukiiwai/blindspot/pkg/core"
 )
@@ -14,28 +14,17 @@ type CudNode map[string]any
 
 // GetID ノードの一意な識別子を生成
 func (n CudNode) GetID() string {
+	var marshaled []byte
+	var err error
 	if len(n) == 0 {
-		return "empty"
-	}
-
-	// キーでソートして一意性を保証
-	keys := make([]string, 0, len(n))
-	for k := range n {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	var parts []string
-	for _, k := range keys {
-		// 値をJSON形式で文字列化して一意性を保証
-		valueBytes, err := json.Marshal(n[k])
+		marshaled = []byte("")
+	} else {
+		marshaled, err = json.Marshal(n)
 		if err != nil {
-			panic(fmt.Sprintf("failed to marshal value for key %s: %v", k, err))
+			panic(fmt.Sprintf("failed to marshal node: %v", err))
 		}
-		parts = append(parts, fmt.Sprintf("%s:%s", k, string(valueBytes)))
 	}
-
-	return strings.Join(parts, ",")
+	return fmt.Sprintf("%x", md5.Sum(marshaled))
 }
 
 // Equals ノードが同じかどうかを判定

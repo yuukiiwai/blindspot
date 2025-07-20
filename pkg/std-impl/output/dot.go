@@ -22,8 +22,20 @@ func (f *DotFormatter) Format(generator *core.Generator) (string, error) {
 	dot.WriteString("  rankdir=LR;\n")
 	dot.WriteString("  node [shape=box];\n\n")
 
-	// ノードの出力
+	// ノードの出力（開始ノードを最初に出力）
+	startNode := generator.GetStartNode()
+	if startNode != nil {
+		nodeID := getDotNodeID(startNode)
+		label := getDotNodeLabel(startNode)
+		dot.WriteString(fmt.Sprintf("  %s [label=\"%s\"];\n", nodeID, label))
+	}
+
+	// 開始ノード以外のノードを出力
 	for _, node := range generator.GetNodes() {
+		// 開始ノードは既に出力済みなのでスキップ
+		if startNode != nil && (*node).GetID() == (*startNode).GetID() {
+			continue
+		}
 		nodeID := getDotNodeID(node)
 		label := getDotNodeLabel(node)
 		dot.WriteString(fmt.Sprintf("  %s [label=\"%s\"];\n", nodeID, label))
@@ -46,7 +58,7 @@ func (f *DotFormatter) Format(generator *core.Generator) (string, error) {
 
 // getDotNodeID ノードのDOT IDを生成
 func getDotNodeID(node *core.Node) string {
-	id := (*node).GetID()
+	id := fmt.Sprintf("\"%s\"", (*node).GetID())
 
 	// 明示的にemptyの場合
 	if id == "empty" {

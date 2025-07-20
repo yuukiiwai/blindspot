@@ -118,8 +118,8 @@ edge_rules:
 func TestCudNodeOperations(t *testing.T) {
 	// 空ノードのテスト
 	emptyNode := newCudNode(nil)
-	if emptyNode.GetID() != "empty" {
-		t.Errorf("Expected empty node ID to be 'empty', got %s", emptyNode.GetID())
+	if emptyNode.GetID() != "d41d8cd98f00b204e9800998ecf8427e" {
+		t.Errorf("Expected empty node ID to be 'd41d8cd98f00b204e9800998ecf8427e', got %s", emptyNode.GetID())
 	}
 
 	// 通常ノードのテスト

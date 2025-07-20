@@ -35,7 +35,7 @@ func createFireConditionFunc(conditionExpr string) func(*core.Node) bool {
 		}
 	}
 
-	program, err := expr.Compile(conditionExpr)
+	program, err := expr.Compile(conditionExpr, expr.AllowUndefinedVariables())
 	if err != nil {
 		panic(fmt.Sprintf("failed to compile fire condition expression: %s, error: %v", conditionExpr, err))
 	}
@@ -67,7 +67,7 @@ func createBlockConditionFunc(conditionExpr string) func(*core.Node) bool {
 		}
 	}
 
-	program, err := expr.Compile(conditionExpr)
+	program, err := expr.Compile(conditionExpr, expr.AllowUndefinedVariables())
 	if err != nil {
 		panic(fmt.Sprintf("failed to compile block condition expression: %s, error: %v", conditionExpr, err))
 	}

@@ -20,8 +20,20 @@ func (f *MermaidFormatter) Format(generator *core.Generator) (string, error) {
 	var mermaid strings.Builder
 	mermaid.WriteString("graph TD\n")
 
-	// ノードの出力
+	// ノードの出力（開始ノードを最初に出力）
+	startNode := generator.GetStartNode()
+	if startNode != nil {
+		nodeID := getMermaidNodeID(startNode)
+		label := getMermaidNodeLabel(startNode)
+		mermaid.WriteString(fmt.Sprintf("    %s[\"%s\"]\n", nodeID, label))
+	}
+
+	// 開始ノード以外のノードを出力
 	for _, node := range generator.GetNodes() {
+		// 開始ノードは既に出力済みなのでスキップ
+		if startNode != nil && (*node).GetID() == (*startNode).GetID() {
+			continue
+		}
 		nodeID := getMermaidNodeID(node)
 		label := getMermaidNodeLabel(node)
 		mermaid.WriteString(fmt.Sprintf("    %s[\"%s\"]\n", nodeID, label))
