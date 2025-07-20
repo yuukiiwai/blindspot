@@ -12,10 +12,11 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 ```
 
 ## 使用方法
-1. 状態遷移jsonを作成する
+1. 状態遷移ファイルを作成する（JSON形式でstringlist、またはYAML形式でcud）
 2. コマンドを実行する
     ```sh
-    $ blindspot -input data.json -output mermaid
+    $ blindspot data.json -input stringlist -output mermaid
+    $ blindspot data.yaml -input cud -output mermaid
     ```
 
 ### 制限モード
@@ -23,7 +24,7 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 
 無限ループを防ぐため、反復回数の上限を設定することを強く推奨します：
 ```sh
-$ blindspot -input data.json -output mermaid --limit 1000
+$ blindspot data.json -input stringlist -output mermaid --limit 1000
 ```
 
 ## 便利な使い方
@@ -32,7 +33,7 @@ data.jsonのルールを元に書かれた状態遷移図をoutput.svgに記載
 ### mermaidを末尾に置く
 target.mdの末尾にグラフを設置する
 ```sh
-$ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> target.md
+$ echo '```mermaid'; blindspot data.json -input stringlist -output mermaid; echo '```' >> target.md
 ```
 
 ### graphvizを使用してsvgを生成する
@@ -40,7 +41,7 @@ $ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> t
 > 前提: graphvizがインストールされていること
 
 ```sh
-$ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
+$ blindspot data.json -input stringlist -output dot | dot -Tsvg -o output.svg
 ```
 
 ## コントリビューター向け
@@ -59,10 +60,11 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 ```
 
 ## Usage
-1. make state json
-2. execute under command
+1. Create state transition file (JSON format for stringlist, or YAML format for cud)
+2. Execute command
     ```sh
-    $ blindspot -input data.json -output mermaid
+    $ blindspot data.json -input stringlist -output mermaid
+    $ blindspot data.yaml -input cud -output mermaid
     ```
 
 ### Limit Mode
@@ -70,7 +72,7 @@ $ go install github.com/yuukiiwai/blindspot/cmd/cli/blindspot@latest
 
 It is strongly recommended to set an upper limit on iterations to prevent infinite loops:
 ```sh
-$ blindspot -input data.json -output mermaid --limit 1000
+$ blindspot data.json -input stringlist -output mermaid --limit 1000
 ```
 
 ## Convenient Usage
@@ -79,7 +81,7 @@ Generate state transition diagrams based on data.json rules and save to output.s
 ### Append mermaid to file
 Place graph at the end of target.md
 ```sh
-$ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> target.md
+$ echo '```mermaid'; blindspot data.json -input stringlist -output mermaid; echo '```' >> target.md
 ```
 
 ### Generate SVG using graphviz
@@ -87,7 +89,7 @@ $ echo '```mermaid'; blindspot -input data.json -output mermaid; echo '```' >> t
 > Prerequisite: graphviz must be installed
 
 ```sh
-$ blindspot -input data.json -output dot | dot -Tsvg -o output.svg
+$ blindspot data.json -input stringlist -output dot | dot -Tsvg -o output.svg
 ```
 
 ## For Contributers

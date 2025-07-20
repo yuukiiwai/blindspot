@@ -11,14 +11,32 @@ import (
 )
 
 func main() {
-	// コマンドライン引数の定義
+	// FlagSetを使用して混合引数を処理
+	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	var help bool
-	flag.BoolVar(&help, "help", false, "ヘルプを表示")
-	inputFile := flag.String("input", "", "入力ファイルのパス")
-	outputFormat := flag.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
-	logSeverity := flag.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
-	limitFlag := flag.Int64("limit", -1, "反復回数の上限")
-	flag.Parse()
+	fs.BoolVar(&help, "help", false, "ヘルプを表示")
+	inputFormat := fs.String("input", "stringlist", "入力形式 (stringlist, cud)")
+	outputFormat := fs.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
+	logSeverity := fs.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
+	limitFlag := fs.Int64("limit", -1, "反復回数の上限")
+
+	// 引数が足りない場合はヘルプを表示
+	if len(os.Args) < 2 {
+		fmt.Println(getCommandDefinition())
+		os.Exit(1)
+	}
+
+	// ヘルプが最初の引数の場合
+	if os.Args[1] == "-help" || os.Args[1] == "--help" {
+		fmt.Println(getCommandDefinition())
+		os.Exit(0)
+	}
+
+	// 最初の引数を入力ファイルとして取得
+	inputFile := os.Args[1]
+
+	// 残りの引数をフラグとして解析
+	fs.Parse(os.Args[2:])
 
 	// limitが指定されていない場合はnilポインタを使用
 	var limit *int64
@@ -53,21 +71,15 @@ func main() {
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
-	// 入力ファイルの確認
-	if *inputFile == "" {
-		slog.Error("入力ファイルを指定してください (-input)")
-		os.Exit(1)
-	}
-
 	// 入力ファイルの読み込み
-	ruleFile, err := os.ReadFile(*inputFile)
+	ruleFile, err := os.ReadFile(inputFile)
 	if err != nil {
 		slog.Error("入力ファイルの読み込みに失敗", "error", err)
 		os.Exit(1)
 	}
 
 	// パーサーの作成
-	parser, err := getParser(*inputFile)
+	parser, err := getParser(*inputFormat)
 	if err != nil {
 		slog.Error("パーサーの作成に失敗", "error", err)
 		os.Exit(1)

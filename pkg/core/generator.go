@@ -116,6 +116,15 @@ func (g *Generator) GetEdges() []*Edge {
 	return g.edges
 }
 
+// GetStartNode 開始ノードを取得
+func (g *Generator) GetStartNode() *Node {
+	startNode := g.newNode(g.startResources.GetResources())
+	if node, exists := g.nodes[startNode.GetID()]; exists {
+		return &node
+	}
+	return nil
+}
+
 // addOrGetNode ノードを追加または取得
 func (g *Generator) addOrGetNode(node *Node) *Node {
 	id := (*node).GetID()

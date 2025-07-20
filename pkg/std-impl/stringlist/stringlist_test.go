@@ -9,9 +9,9 @@ import (
 )
 
 var expectedOutput = `graph TD
+    empty["empty"]
     a["a"]
     a_b["a<br/>b"]
-    empty["empty"]
 
     empty -->|create_a| a
     a -->|create_b_from_a| a_b

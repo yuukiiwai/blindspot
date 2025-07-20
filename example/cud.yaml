@@ -1,0 +1,39 @@
+start_resources: {}
+
+edge_rules:
+  - name: create_a
+    effect: 
+      - action: create
+        resource:
+          key: a
+          value: {}
+    fire_condition: ""
+    block_condition: ""
+
+  - name: create_b_from_a
+    effect:
+      - action: create
+        resource:
+          key: b
+          value: {}
+    fire_condition: a != nil
+    block_condition: b != nil
+
+  - name: delete_b
+    effect:
+      - action: delete
+        resource:
+          key: b
+          value: ""
+    fire_condition: b != nil
+    block_condition: ""
+
+  - name: delete_a
+    effect:
+      - action: delete
+        resource:
+          key: a
+          value: ""
+    fire_condition: a != nil
+    block_condition: b != nil
+    
