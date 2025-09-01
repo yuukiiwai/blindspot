@@ -44,6 +44,7 @@ func getCommandDefinition() string {
 		-output string (mermaid, visjs, dot) default: mermaid
 		-log-severity string (debug, info, warn, error) default: warn
 		--limit int64 (反復回数の上限、無限ループ防止) default: 0 (無制限)
+		-y (確認プロンプトをスキップ)
 
 	Examples:
 		blindspot rules.json -input stringlist -output mermaid
