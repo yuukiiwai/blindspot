@@ -33,7 +33,7 @@ data.jsonのルールを元に書かれた状態遷移図をoutput.svgに記載
 ### mermaidを末尾に置く
 target.mdの末尾にグラフを設置する
 ```sh
-$ echo '```mermaid'; blindspot data.json -input stringlist -output mermaid; echo '```' >> target.md
+$ echo '```mermaid'; blindspot data.json -input stringlist -output mermaid -y; echo '```' >> target.md
 ```
 
 ### graphvizを使用してsvgを生成する
@@ -41,7 +41,7 @@ $ echo '```mermaid'; blindspot data.json -input stringlist -output mermaid; echo
 > 前提: graphvizがインストールされていること
 
 ```sh
-$ blindspot data.json -input stringlist -output dot | dot -Tsvg -o output.svg
+$ blindspot data.json -input stringlist -output dot -y| dot -Tsvg -o output.svg
 ```
 
 ## コントリビューター向け
