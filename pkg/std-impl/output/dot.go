@@ -48,7 +48,9 @@ func (f *DotFormatter) Format(generator *core.Generator) (string, error) {
 		fromID := getDotNodeID(edge.GetFrom())
 		toID := getDotNodeID(edge.GetTo())
 		edgeLabel := edge.GetRule().GetName()
-		dot.WriteString(fmt.Sprintf("  %s -> %s [label=\"%s\"];\n", fromID, toID, edgeLabel))
+		// エッジラベルのダブルクォートもエスケープ
+		escapedEdgeLabel := strings.ReplaceAll(edgeLabel, "\"", "\\\"")
+		dot.WriteString(fmt.Sprintf("  %s -> %s [label=\"%s\"];\n", fromID, toID, escapedEdgeLabel))
 	}
 
 	dot.WriteString("}\n")
@@ -86,5 +88,13 @@ func getDotNodeID(node *core.Node) string {
 func getDotNodeLabel(node *core.Node) string {
 	resources := (*node).GetResourcesString()
 
-	return strings.Join(resources, "\\n")
+	// DOT形式ではダブルクォートをエスケープする必要がある
+	var escapedResources []string
+	for _, resource := range resources {
+		// ダブルクォートを\"にエスケープ
+		escaped := strings.ReplaceAll(resource, "\"", "\\\"")
+		escapedResources = append(escapedResources, escaped)
+	}
+
+	return strings.Join(escapedResources, "\\n")
 }
