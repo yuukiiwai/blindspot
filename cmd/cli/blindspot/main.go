@@ -19,6 +19,7 @@ func main() {
 	outputFormat := fs.String("output", "mermaid", "出力形式 (mermaid, visjs, dot)")
 	logSeverity := fs.String("log-severity", "warn", "ログの重大度 (debug, info, warn, error)")
 	limitFlag := fs.Int64("limit", -1, "反復回数の上限")
+	yesFlag := fs.Bool("y", false, "確認プロンプトをスキップ")
 
 	// 引数が足りない場合はヘルプを表示
 	if len(os.Args) < 2 {
@@ -92,19 +93,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	if limit != nil {
-		fmt.Printf("反復回数の上限は%dです.よろしいですか？(y/n)", *limit)
-		var input string
-		fmt.Scanln(&input)
-		if input != "y" {
-			os.Exit(0)
-		}
-	} else {
-		fmt.Println("反復回数の上限は設定されていません.論理的に終了条件が存在しない場合,コンピューターに不具合が発生する可能性があります.また,生成後のステートマシンの出力中に停止する可能性があります.よろしいですか？(y/n)")
-		var input string
-		fmt.Scanln(&input)
-		if input != "y" {
-			os.Exit(0)
+	if !*yesFlag {
+		if limit != nil {
+			fmt.Printf("反復回数の上限は%dです.よろしいですか？(y/n)", *limit)
+			var input string
+			fmt.Scanln(&input)
+			if input != "y" {
+				os.Exit(0)
+			}
+		} else {
+			fmt.Println("反復回数の上限は設定されていません.論理的に終了条件が存在しない場合,コンピューターに不具合が発生する可能性があります.また,生成後のステートマシンの出力中に停止する可能性があります.よろしいですか？(y/n)")
+			var input string
+			fmt.Scanln(&input)
+			if input != "y" {
+				os.Exit(0)
+			}
 		}
 	}
 
